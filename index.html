@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Investment Analyzer - Roanoke, VA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            background: white;
+            overflow: hidden;
+        }
+
+        header {
+            background: #1a202c;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #3182ce;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+            color: #a0c4e0;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr 400px;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: #f7fafc;
+            padding: 30px;
+            border-right: 1px solid #cbd5e0;
+        }
+
+        .sidebar h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .address-display {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #3182ce;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .research-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .research-button:hover {
+            background: #2c5282;
+        }
+
+        .tip-box {
+            background: #3182ce;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: white;
+            border-left: 4px solid #9c1c1c;
+        }
+
+        .center-panel {
+            padding: 30px 40px;
+            overflow-y: auto;
+            max-height: 800px;
+        }
+
+        .center-panel h2 {
+            color: #1a202c;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a202c;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3182ce;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .right-panel {
+            background: #f7fafc;
+            padding: 30px;
+            border-left: 1px solid #cbd5e0;
+            overflow-y: auto;
+        }
+
+        .right-panel h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e0;
+        }
+
+        .metric-label {
+            font-size: 0.85em;
+            color: #4a5568;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .positive {
+            color: #3182ce;
+        }
+
+        .negative {
+            color: #9c1c1c;
+        }
+
+        .neutral {
+            color: #1a202c;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+            background: white;
+            padding: 20px;
+            border: 1px solid #cbd5e0;
+        }
+
+        .save-button {
+            width: 100%;
+            padding: 15px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+
+        .save-button:hover {
+            background: #2c5282;
+        }
+
+        .comparison-section {
+            padding: 30px;
+            background: #f7fafc;
+        }
+
+        .comparison-section h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .comparison-table {
+            width: 100%;
+            background: white;
+            overflow: hidden;
+            border: 1px solid #cbd5e0;
+        }
+
+        .comparison-table th {
+            background: #1a202c;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #cbd5e0;
+        }
+
+        .delete-btn {
+            background: #9c1c1c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: #7a1616;
+        }
+
+        .export-btn {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .export-btn:hover {
+            background: #2c5282;
+        }
+
+        footer {
+            background: #1a202c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar, .right-panel {
+                border: none;
+                border-bottom: 1px solid #cbd5e0;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .research-button, .save-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 Real Estate Investment Analyzer</h1>
+            <p>Roanoke, VA - Professional ROI Calculator</p>
+        </header>
+
+        <div class="main-content">
+            <!-- LEFT SIDEBAR -->
+            <div class="sidebar">
+                <h2>📊 Research Assistant</h2>
+                <div class="address-display" id="addressDisplay">
+                    Enter an address to begin
+                </div>
+                
+                <button class="research-button" onclick="searchZillow()">🔍 Search on Zillow</button>
+                <button class="research-button" onclick="searchRealtor()">🏡 Search on Realtor.com</button>
+                <button class="research-button" onclick="searchHomes()">🏘️ Search on Homes.com</button>
+                <button class="research-button" onclick="searchRentometer()">💰 Find Rental Comps</button>
+                <button class="research-button" onclick="searchTaxRecords()">📋 County Tax Records</button>
+
+                <div class="tip-box">
+                    <strong style="color: #9c1c1c;">💡 Pro Tip:</strong> Compare data across multiple sources for accuracy. Property details can vary between sites.
+                </div>
+            </div>
+
+            <!-- CENTER PANEL -->
+            <div class="center-panel">
+                <h2>Property Details</h2>
+                
+                <div class="form-group">
+                    <label>Property Address</label>
+                    <input type="text" id="address" placeholder="123 Main St, Roanoke, VA 24016" oninput="updateAddress(); calculate()">
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label>Purchase Price ($)</label>
+                        <input type="number" id="purchasePrice" placeholder="250000" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Estimated Monthly Rent ($)</label>
+                        <input type="number" id="monthlyRent" placeholder="2000" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label>Down Payment ($)</label>
+                        <input type="number" id="downPaymentDollar" placeholder="50000" oninput="updateDownPaymentPercent(); calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Down Payment (%)</label>
+                        <input type="number" id="downPaymentPercent" placeholder="20" step="0.1" oninput="updateDownPaymentDollar(); calculate()">
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label>Interest Rate (%)</label>
+                        <input type="number" id="interestRate" placeholder="7.0" step="0.1" value="7.0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Term (years)</label>
+                        <input type="number" id="loanTerm" placeholder="30" value="30" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label>Annual Property Taxes ($)</label>
+                        <input type="number" id="propertyTaxes" placeholder="3000" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Insurance ($)</label>
+                        <input type="number" id="insurance" placeholder="1200" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label>Monthly HOA Fees ($)</label>
+                        <input type="number" id="hoaFees" placeholder="0" value="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Vacancy Rate (%)</label>
+                        <input type="number" id="vacancyRate" placeholder="8" value="8" step="0.1" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label>Maintenance Reserve (%)</label>
+                        <input type="number" id="maintenanceRate" placeholder="1" value="1" step="0.1" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Property Mgmt Fee (% of rent)</label>
+                        <input type="number" id="mgmtFee" placeholder="0" value="0" step="0.1" oninput="calculate()">
+                    </div>
+                </div>
+
+                <button class="save-button" onclick="saveProperty()">💾 Save Property for Comparison</button>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="right-panel">
+                <h2>📈 ROI Analysis</h2>
+                
+                <div class="metric-card">
+                    <div class="metric-label">Monthly Cash Flow</div>
+                    <div class="metric-value" id="cashFlow">$0</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Cash-on-Cash Return</div>
+                    <div class="metric-value neutral" id="cocReturn">0%</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Cap Rate</div>
+                    <div class="metric-value neutral" id="capRate">0%</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Total Cash Needed</div>
+                    <div class="metric-value neutral" id="totalCash">$0</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Break-Even Rent</div>
+                    <div class="metric-value neutral" id="breakEven">$0</div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">5-Year Projection</div>
+                    <div style="font-size: 1.2em; font-weight: 600; color: #1a202c;" id="fiveYear">$0</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">10-Year Projection</div>
+                    <div style="font-size: 1.2em; font-weight: 600; color: #1a202c;" id="tenYear">$0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPARISON SECTION -->
+        <div class="comparison-section">
+            <h2>🔄 Property Comparison</h2>
+            <table class="comparison-table" id="comparisonTable">
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Purchase Price</th>
+                        <th>Cash Flow</th>
+                        <th>CoC Return</th>
+                        <th>Cap Rate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #718096;">No properties saved yet. Save a property above to compare.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="export-btn" onclick="exportComparison()">📄 Export Comparison</button>
+        </div>
+
+        <footer>
+            <p>Built by Robert Krause, Roanoke Real Estate Agent</p>
+            <p style="opacity: 0.7; margin-top: 5px;">© 2025 - Professional Investment Analysis Tool</p>
+        </footer>
+    </div>
+
+    <script>
+        let chart = null;
+        let savedProperties = JSON.parse(localStorage.getItem('savedProperties')) || [];
+
+        // Update address display
+        function updateAddress() {
+            const address = document.getElementById('address').value || 'Enter an address to begin';
+            document.getElementById('addressDisplay').textContent = address;
+        }
+
+        // Down payment sync
+        function updateDownPaymentPercent() {
+            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const downDollar = parseFloat(document.getElementById('downPaymentDollar').value) || 0;
+            if (price > 0) {
+                document.getElementById('downPaymentPercent').value = ((downDollar / price) * 100).toFixed(2);
+            }
+        }
+
+        function updateDownPaymentDollar() {
+            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const downPercent = parseFloat(document.getElementById('downPaymentPercent').value) || 0;
+            document.getElementById('downPaymentDollar').value = Math.round((price * downPercent) / 100);
+        }
+
+        // Research functions
+        function searchZillow() {
+            const address = document.getElementById('address').value;
+            if (address) {
+                window.open(`https://www.zillow.com/homes/${encodeURIComponent(address)}_rb/`, '_blank');
+            } else {
+                alert('Please enter an address first');
+            }
+        }
+
+        function searchRealtor() {
+            const address = document.getElementById('address').value;
+            if (address) {
+                window.open(`https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(address)}`, '_blank');
+            } else {
+                alert('Please enter an address first');
+            }
+        }
+
+        function searchHomes() {
+            const address = document.getElementById('address').value;
+            if (address) {
+                window.open(`https://www.homes.com/search/${encodeURIComponent(address)}`, '_blank');
+            } else {
+                alert('Please enter an address first');
+            }
+        }
+
+        function searchRentometer() {
+            const address = document.getElementById('address').value;
+            if (address) {
+                window.open(`https://www.rentometer.com/`, '_blank');
+            } else {
+                alert('Please enter an address first');
+            }
+        }
+
+        function searchTaxRecords() {
+            window.open('https://www.roanokecountyva.gov/', '_blank');
+        }
+
+        // Main calculation function
+        function calculate() {
+            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const rent = parseFloat(document.getElementById('monthlyRent').value) || 0;
+            const downPayment = parseFloat(document.getElementById('downPaymentDollar').value) || 0;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value) || 30;
+            const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const hoaFees = parseFloat(document.getElementById('hoaFees').value) || 0;
+            const vacancyRate = parseFloat(document.getElementById('vacancyRate').value) || 0;
+            const maintenanceRate = parseFloat(document.getElementById('maintenanceRate').value) || 0;
+            const mgmtFee = parseFloat(document.getElementById('mgmtFee').value) || 0;
+
+            if (price === 0) return;
+
+            // Calculate mortgage payment
+            const loanAmount = price - downPayment;
+            const monthlyRate = (interestRate / 100) / 12;
+            const numPayments = loanTerm * 12;
+            let mortgagePayment = 0;
+            if (loanAmount > 0 && monthlyRate > 0) {
+                mortgagePayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            }
+
+            // Monthly expenses - FIXED: Calculate property mgmt BEFORE applying vacancy
+            const monthlyTaxes = propertyTaxes / 12;
+            const monthlyInsurance = insurance / 12;
+            const monthlyMaintenance = (price * (maintenanceRate / 100)) / 12;
+            
+            // Effective rental income after vacancy
+            const effectiveRent = rent * (1 - (vacancyRate / 100));
+            
+            // Property management fee is based on collected rent (after vacancy)
+            const propertyMgmt = effectiveRent * (mgmtFee / 100);
+            
+            // Total monthly expenses
+            const totalExpenses = mortgagePayment + monthlyTaxes + monthlyInsurance + hoaFees + monthlyMaintenance + propertyMgmt;
+            
+            // Cash flow is effective rent minus all expenses
+            const cashFlow = effectiveRent - totalExpenses;
+
+            // ROI metrics
+            const annualCashFlow = cashFlow * 12;
+            const cocReturn = downPayment > 0 ? (annualCashFlow / downPayment) * 100 : 0;
+            
+            // NOI doesn't include mortgage, only operating expenses
+            const annualOperatingExpenses = (monthlyTaxes + monthlyInsurance + hoaFees + monthlyMaintenance + propertyMgmt) * 12;
+            const annualNOI = (effectiveRent * 12) - annualOperatingExpenses;
+            const capRate = price > 0 ? (annualNOI / price) * 100 : 0;
+
+            const totalCashNeeded = downPayment + (price * 0.03); // Assuming 3% closing costs
+            
+            // Break-even rent = total expenses divided by effective collection rate
+            const breakEvenRent = totalExpenses / (1 - (vacancyRate / 100) - (mgmtFee / 100));
+
+            // Projections
+            const fiveYearProfit = annualCashFlow * 5;
+            const tenYearProfit = annualCashFlow * 10;
+
+            // Update UI
+            document.getElementById('cashFlow').textContent = formatCurrency(cashFlow);
+            document.getElementById('cashFlow').className = `metric-value ${cashFlow >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('cocReturn').textContent = formatPercent(cocReturn);
+            document.getElementById('capRate').textContent = formatPercent(capRate);
+            document.getElementById('totalCash').textContent = formatCurrency(totalCashNeeded);
+            document.getElementById('breakEven').textContent = formatCurrency(breakEvenRent);
+            document.getElementById('fiveYear').textContent = formatCurrency(fiveYearProfit);
+            document.getElementById('tenYear').textContent = formatCurrency(tenYearProfit);
+
+            // Update chart - show vacancy as a separate item
+            const vacancyLoss = rent * (vacancyRate / 100);
+            updateChart(mortgagePayment, monthlyTaxes, monthlyInsurance, hoaFees, monthlyMaintenance, vacancyLoss, propertyMgmt);
+        }
+
+        function updateChart(mortgage, taxes, insurance, hoa, maintenance, vacancy, mgmt) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mortgage', 'Taxes', 'Insurance', 'HOA', 'Maintenance', 'Vacancy', 'Mgmt'],
+                    datasets: [{
+                        data: [mortgage, taxes, insurance, hoa, maintenance, vacancy, mgmt],
+                        backgroundColor: [
+                            '#3182ce',
+                            '#4a5568',
+                            '#9c1c1c',
+                            '#63b3ed',
+                            '#2c5282',
+                            '#cbd5e0',
+                            '#1a202c'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Monthly Expense Breakdown'
+                        }
+                    }
+                }
+            });
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(value);
+        }
+
+        function formatPercent(value) {
+            return value.toFixed(2) + '%';
+        }
+
+        // Save property
+        function saveProperty() {
+            const address = document.getElementById('address').value;
+            if (!address) {
+                alert('Please enter an address first');
+                return;
+            }
+
+            if (savedProperties.length >= 5) {
+                alert('Maximum 5 properties. Delete one to add more.');
+                return;
+            }
+
+            const property = {
+                address: address,
+                price: parseFloat(document.getElementById('purchasePrice').value) || 0,
+                cashFlow: document.getElementById('cashFlow').textContent,
+                cocReturn: document.getElementById('cocReturn').textContent,
+                capRate: document.getElementById('capRate').textContent
+            };
+
+            savedProperties.push(property);
+            localStorage.setItem('savedProperties', JSON.stringify(savedProperties));
+            updateComparisonTable();
+            alert('Property saved!');
+        }
+
+        function deleteProperty(index) {
+            savedProperties.splice(index, 1);
+            localStorage.setItem('savedProperties', JSON.stringify(savedProperties));
+            updateComparisonTable();
+        }
+
+        function updateComparisonTable() {
+            const tbody = document.getElementById('comparisonBody');
+            
+            if (savedProperties.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #718096;">No properties saved yet. Save a property above to compare.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = savedProperties.map((prop, index) => `
+                <tr>
+                    <td><strong>${prop.address}</strong></td>
+                    <td>${formatCurrency(prop.price)}</td>
+                    <td>${prop.cashFlow}</td>
+                    <td>${prop.cocReturn}</td>
+                    <td>${prop.capRate}</td>
+                    <td><button class="delete-btn" onclick="deleteProperty(${index})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function exportComparison() {
+            window.print();
+        }
+
+        // Initialize
+        updateComparisonTable();
+    </script>
+</body>
+</html>
