@@ -25,7 +25,7 @@ A comprehensive ROI calculator designed for real estate investors to analyze res
 ## 🚀 Quick Start
 
 ### Try It Now
-Visit the live demo: [[https://yourusername.github.io/realestateanalyzer](https://yourusername.github.io/realestateanalyzer)](https://krauseinafrica.github.io/realestateanalyzer/)
+Visit the live demo: (https://krauseinafrica.github.io/realestateanalyzer/)
 
 ### Run Locally
 ```bash
