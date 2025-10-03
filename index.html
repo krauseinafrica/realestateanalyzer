@@ -13,7 +13,18 @@
             }
         }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Qxtpcy0RGcJr-jVFgZXT1PfKgleS81E&libraries=places&callback=initMap" async defer></script>
+    <script src="config.js"></script>
+<script>
+    function loadGoogleMaps() {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+    loadGoogleMaps();
+</script>
+
     <style>
         * {
             margin: 0;
@@ -150,6 +161,18 @@
         .form-group input:focus {
             outline: none;
             border-color: #3182ce;
+        }
+
+        .auto-filled {
+            background-color: #e6f3ff !important;
+            border-left: 3px solid #3182ce !important;
+        }
+
+        .auto-filled-note {
+            font-size: 0.8em;
+            color: #3182ce;
+            margin-top: 3px;
+            font-style: italic;
         }
 
         .two-column {
@@ -390,12 +413,13 @@
                 <div class="two-column">
                     <div class="form-group">
                         <label>Annual Property Taxes ($)</label>
-                        <input type="number" id="propertyTaxes" placeholder="3000" oninput="calculate()">
+                        <input type="number" id="propertyTaxes" placeholder="3000" oninput="this.classList.remove('auto-filled'); calculate()">
                         <small id="taxRateDisplay" style="color: #4a5568; font-size: 0.85em; margin-top: 5px; display: block;"></small>
                     </div>
                     <div class="form-group">
                         <label>Annual Insurance ($)</label>
-                        <input type="number" id="insurance" placeholder="1200" oninput="calculate()">
+                        <input type="number" id="insurance" placeholder="1200" oninput="this.classList.remove('auto-filled'); calculate()">
+                        <small id="insuranceNote" class="auto-filled-note" style="display: none;">⚠️ Estimated - verify with insurance quotes</small>
                     </div>
                 </div>
 
@@ -517,6 +541,20 @@
             'VA': 0.82, 'WA': 0.98, 'WV': 0.58, 'WI': 1.85, 'WY': 0.61
         };
 
+        // State average home insurance costs ($ per $1000 of home value annually)
+        const stateInsuranceRates = {
+            'AL': 5.50, 'AK': 2.80, 'AZ': 2.50, 'AR': 4.80, 'CA': 3.50,
+            'CO': 4.20, 'CT': 3.80, 'DE': 2.90, 'FL': 10.50, 'GA': 4.20,
+            'HI': 2.60, 'ID': 2.40, 'IL': 3.20, 'IN': 3.50, 'IA': 3.80,
+            'KS': 5.20, 'KY': 4.10, 'LA': 7.80, 'ME': 2.80, 'MD': 3.60,
+            'MA': 3.90, 'MI': 3.70, 'MN': 3.50, 'MS': 6.20, 'MO': 4.90,
+            'MT': 3.10, 'NE': 5.80, 'NV': 2.70, 'NH': 2.90, 'NJ': 3.50,
+            'NM': 3.80, 'NY': 3.60, 'NC': 3.20, 'ND': 4.50, 'OH': 2.90,
+            'OK': 7.50, 'OR': 2.50, 'PA': 2.80, 'RI': 4.20, 'SC': 4.80,
+            'SD': 4.60, 'TN': 3.90, 'TX': 5.20, 'UT': 2.30, 'VT': 2.70,
+            'VA': 3.10, 'WA': 2.60, 'WV': 3.40, 'WI': 3.00, 'WY': 3.30
+        };
+
         // Initialize Google Places Autocomplete
         function initAutocomplete() {
             const input = document.getElementById('address');
@@ -572,6 +610,15 @@
                 const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 250000;
                 const estimatedAnnualTax = purchasePrice * (stateTaxRates[state] / 100);
                 document.getElementById('propertyTaxes').value = Math.round(estimatedAnnualTax);
+                document.getElementById('propertyTaxes').classList.add('auto-filled');
+            }
+
+            // Auto-set insurance based on state
+            if (state && stateInsuranceRates[state]) {
+                const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 250000;
+                const estimatedAnnualInsurance = (purchasePrice / 1000) * stateInsuranceRates[state];
+                document.getElementById('insurance').value = Math.round(estimatedAnnualInsurance);
+                document.getElementById('insurance').classList.add('auto-filled');
             }
 
             calculate();
@@ -741,6 +788,13 @@
             const effectiveTaxRate = price > 0 ? (propertyTaxes / price) * 100 : 0;
             document.getElementById('taxRateDisplay').textContent = 
                 price > 0 ? `Effective rate: ${effectiveTaxRate.toFixed(2)}% of property value` : '';
+
+            // Show insurance note if auto-filled
+            const insuranceInput = document.getElementById('insurance');
+            const insuranceNote = document.getElementById('insuranceNote');
+            if (insuranceInput.classList.contains('auto-filled')) {
+                insuranceNote.style.display = 'block';
+            }
 
             // Update chart - show vacancy as a separate item
             const vacancyLoss = rent * (vacancyRate / 100);
