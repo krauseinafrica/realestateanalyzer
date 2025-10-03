@@ -391,6 +391,7 @@
                     <div class="form-group">
                         <label>Annual Property Taxes ($)</label>
                         <input type="number" id="propertyTaxes" placeholder="3000" oninput="calculate()">
+                        <small id="taxRateDisplay" style="color: #4a5568; font-size: 0.85em; margin-top: 5px; display: block;"></small>
                     </div>
                     <div class="form-group">
                         <label>Annual Insurance ($)</label>
@@ -718,6 +719,11 @@
             document.getElementById('breakEven').textContent = formatCurrency(breakEvenRent);
             document.getElementById('fiveYear').textContent = formatCurrency(fiveYearProfit);
             document.getElementById('tenYear').textContent = formatCurrency(tenYearProfit);
+
+            // Update tax rate display
+            const effectiveTaxRate = price > 0 ? (propertyTaxes / price) * 100 : 0;
+            document.getElementById('taxRateDisplay').textContent = 
+                price > 0 ? `Effective rate: ${effectiveTaxRate.toFixed(2)}% of property value` : '';
 
             // Update chart - show vacancy as a separate item
             const vacancyLoss = rent * (vacancyRate / 100);
