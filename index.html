@@ -119,7 +119,6 @@
         .center-panel {
             padding: 30px 40px;
             overflow-y: auto;
-            max-height: 800px;
         }
 
         .center-panel h2 {
@@ -232,6 +231,7 @@
         .comparison-section {
             padding: 30px;
             background: #f7fafc;
+            width: 100%;
         }
 
         .comparison-section h2 {
@@ -617,9 +617,9 @@
         function searchRealtor() {
             const address = document.getElementById('address').value;
             if (address) {
-                // Format: street_city_state_zip
-                const formatted = address.replace(/[,]/g, '').replace(/\s+/g, '_');
-                window.open(`https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(formatted)}`, '_blank');
+                // Realtor.com just needs a general search - their URLs are too complex to predict
+                const searchQuery = encodeURIComponent(address);
+                window.open(`https://www.realtor.com/realestateandhomes-search/${searchQuery}`, '_blank');
             } else {
                 alert('Please enter an address first');
             }
@@ -628,9 +628,18 @@
         function searchHomes() {
             const address = document.getElementById('address').value;
             if (address) {
-                // Homes.com search page works better than trying to guess the property URL
-                const searchQuery = encodeURIComponent(address);
-                window.open(`https://www.homes.com/search/?q=${searchQuery}`, '_blank');
+                // Homes.com works better with just the city/state for search
+                const city = document.getElementById('city').value;
+                const state = document.getElementById('state').value;
+                const zip = document.getElementById('zipCode').value;
+                
+                // If we have city and state from autocomplete, use those
+                if (city && state) {
+                    window.open(`https://www.homes.com/${city.toLowerCase().replace(/\s+/g, '-')}-${state.toLowerCase()}/`, '_blank');
+                } else {
+                    // Fall back to main search page
+                    window.open(`https://www.homes.com/`, '_blank');
+                }
             } else {
                 alert('Please enter an address first');
             }
@@ -638,7 +647,15 @@
 
         function searchRentometer() {
             const address = document.getElementById('address').value;
-            if (address) {
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const zip = document.getElementById('zipCode').value;
+            
+            if (address && zip) {
+                // Rentometer can accept zip code in the URL
+                window.open(`https://www.rentometer.com/rental-property-analysis/${zip}`, '_blank');
+            } else if (address) {
+                // Fall back to main search page
                 window.open(`https://www.rentometer.com/`, '_blank');
             } else {
                 alert('Please enter an address first');
@@ -813,6 +830,11 @@
         function updateComparisonTable() {
             const tbody = document.getElementById('comparisonBody');
             
+            if (!tbody) {
+                console.error('Comparison table body not found');
+                return;
+            }
+            
             if (savedProperties.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #718096;">No properties saved yet. Save a property above to compare.</td></tr>';
                 return;
@@ -828,6 +850,8 @@
                     <td><button class="delete-btn" onclick="deleteProperty(${index})">Delete</button></td>
                 </tr>
             `).join('');
+            
+            console.log('Comparison table updated with', savedProperties.length, 'properties');
         }
 
         function exportComparison() {
