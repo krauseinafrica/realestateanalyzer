@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real Estate Investment Analyzer - Roanoke, VA</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Qxtpcy0RGcJr-jVFgZXT1PfKgleS81E&libraries=places"></script>
+    <script>
+        function initMap() {
+            // This function is called by the Google Maps API when it's ready
+            if (typeof initAutocomplete === 'function') {
+                initAutocomplete();
+            }
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_NEW_API_KEY_HERE&libraries=places&callback=initMap" async defer></script>
     <style>
         * {
             margin: 0;
@@ -570,7 +578,7 @@
 
         // Initialize when page loads
         window.addEventListener('load', function() {
-            initAutocomplete();
+            // Don't call initAutocomplete here - it's called by the Google Maps callback
             updateComparisonTable();
         });
 
