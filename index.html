@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real Estate Investment Analyzer - Roanoke, VA</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Qxtpcy0RGcJr-jVFgZXT1PfKgleS81E&libraries=places"></script>
     <style>
         * {
             margin: 0;
@@ -339,7 +340,10 @@
                 
                 <div class="form-group">
                     <label>Property Address</label>
-                    <input type="text" id="address" placeholder="123 Main St, Roanoke, VA 24016" oninput="updateAddress(); calculate()">
+                    <input type="text" id="address" placeholder="Start typing an address..." oninput="calculate()">
+                    <input type="hidden" id="city">
+                    <input type="hidden" id="state">
+                    <input type="hidden" id="zipCode">
                 </div>
 
                 <div class="two-column">
@@ -488,6 +492,87 @@
     <script>
         let chart = null;
         let savedProperties = JSON.parse(localStorage.getItem('savedProperties')) || [];
+        let autocomplete;
+
+        // State average property tax rates (as percentage of home value)
+        const stateTaxRates = {
+            'AL': 0.41, 'AK': 1.19, 'AZ': 0.62, 'AR': 0.62, 'CA': 0.76,
+            'CO': 0.51, 'CT': 2.14, 'DE': 0.57, 'FL': 0.83, 'GA': 0.92,
+            'HI': 0.28, 'ID': 0.63, 'IL': 2.27, 'IN': 0.85, 'IA': 1.57,
+            'KS': 1.41, 'KY': 0.86, 'LA': 0.55, 'ME': 1.36, 'MD': 1.09,
+            'MA': 1.23, 'MI': 1.54, 'MN': 1.12, 'MS': 0.79, 'MO': 0.97,
+            'MT': 0.84, 'NE': 1.73, 'NV': 0.60, 'NH': 2.18, 'NJ': 2.49,
+            'NM': 0.80, 'NY': 1.72, 'NC': 0.84, 'ND': 0.98, 'OH': 1.56,
+            'OK': 0.90, 'OR': 0.97, 'PA': 1.58, 'RI': 1.63, 'SC': 0.57,
+            'SD': 1.31, 'TN': 0.71, 'TX': 1.80, 'UT': 0.60, 'VT': 1.90,
+            'VA': 0.82, 'WA': 0.98, 'WV': 0.58, 'WI': 1.85, 'WY': 0.61
+        };
+
+        // Initialize Google Places Autocomplete
+        function initAutocomplete() {
+            const input = document.getElementById('address');
+            autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['address'],
+                componentRestrictions: { country: 'us' }
+            });
+
+            autocomplete.addListener('place_changed', onPlaceChanged);
+        }
+
+        function onPlaceChanged() {
+            const place = autocomplete.getPlace();
+            
+            if (!place.geometry) {
+                return;
+            }
+
+            // Extract address components
+            let street = '';
+            let city = '';
+            let state = '';
+            let zip = '';
+
+            for (const component of place.address_components) {
+                const type = component.types[0];
+                
+                if (type === 'street_number') {
+                    street = component.long_name;
+                } else if (type === 'route') {
+                    street += ' ' + component.long_name;
+                } else if (type === 'locality') {
+                    city = component.long_name;
+                } else if (type === 'administrative_area_level_1') {
+                    state = component.short_name;
+                } else if (type === 'postal_code') {
+                    zip = component.long_name;
+                }
+            }
+
+            // Update hidden fields
+            document.getElementById('city').value = city;
+            document.getElementById('state').value = state;
+            document.getElementById('zipCode').value = zip;
+
+            // Update address display
+            const fullAddress = `${street}, ${city}, ${state} ${zip}`;
+            document.getElementById('address').value = fullAddress;
+            updateAddress();
+
+            // Auto-set property tax based on state
+            if (state && stateTaxRates[state]) {
+                const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 250000;
+                const estimatedAnnualTax = purchasePrice * (stateTaxRates[state] / 100);
+                document.getElementById('propertyTaxes').value = Math.round(estimatedAnnualTax);
+            }
+
+            calculate();
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            initAutocomplete();
+            updateComparisonTable();
+        });
 
         // Update address display
         function updateAddress() {
@@ -523,7 +608,9 @@
         function searchRealtor() {
             const address = document.getElementById('address').value;
             if (address) {
-                window.open(`https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(address)}`, '_blank');
+                // Format: street_city_state_zip
+                const formatted = address.replace(/[,]/g, '').replace(/\s+/g, '_');
+                window.open(`https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(formatted)}`, '_blank');
             } else {
                 alert('Please enter an address first');
             }
@@ -532,7 +619,9 @@
         function searchHomes() {
             const address = document.getElementById('address').value;
             if (address) {
-                window.open(`https://www.homes.com/search/${encodeURIComponent(address)}`, '_blank');
+                // Homes.com search page works better than trying to guess the property URL
+                const searchQuery = encodeURIComponent(address);
+                window.open(`https://www.homes.com/search/?q=${searchQuery}`, '_blank');
             } else {
                 alert('Please enter an address first');
             }
@@ -731,8 +820,7 @@
             window.print();
         }
 
-        // Initialize
-        updateComparisonTable();
+        // Initialize - removed from here since it's now in window.onload
     </script>
 </body>
 </html>
