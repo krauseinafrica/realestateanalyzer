@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<div class="two-column rental-only">
+                    <div class="form-group">
+                        <label>Estimated Monthly Rent ($)</label>
+                        <input type="number" id="monthlyRent" placeholder="2000" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Property Mgmt Fee (% of rent)</label>
+                        <input type="number" id="mgmtFee" placeholder="0" value="0" step="0.1" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="form-group flip-only">
+                    <label>After Repair Value (ARV) ($)</label>
+                    <input type="number" id="arv" placeholder="350000" oninput="calculate()">
+                </div>
+
+                <div class="form-group flip-only">
+                    <label>Estimated Rehab Costs ($)</label>
+                    <input type="number" id="rehabCosts" placeholder="50000" oninput="calculate()">
+                </div>
+
+                <div class="form-group flip-only">
+                    <label>Holding Time (months)</label>
+                    <input type="number" id="holdingTime" placeholder="6" value="6" oninput="calculate()">
+                </div><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +37,7 @@
             }
         }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9Qxtpcy0RGcJr-jVFgZXT1PfKgleS81E&libraries=places&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_NEW_API_KEY_HERE&libraries=places&callback=initMap" async defer></script>
     <style>
         * {
             margin: 0;
@@ -162,6 +186,33 @@
             color: #3182ce;
             margin-top: 3px;
             font-style: italic;
+        }
+
+        .strategy-btn {
+            flex: 1;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #cbd5e0;
+            color: #1a202c;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .strategy-btn:hover {
+            border-color: #3182ce;
+            background: #f7fafc;
+        }
+
+        .strategy-btn.active {
+            background: #3182ce;
+            color: white;
+            border-color: #3182ce;
+        }
+
+        .flip-only, .rental-only {
+            display: none;
         }
 
         .two-column {
@@ -358,6 +409,19 @@
             <div class="center-panel">
                 <h2>Property Details</h2>
                 
+                <!-- Investment Strategy Toggle -->
+                <div class="form-group" style="margin-bottom: 30px;">
+                    <label style="font-size: 1.1em; margin-bottom: 15px; display: block;">Investment Strategy</label>
+                    <div style="display: flex; gap: 15px;">
+                        <button id="rentalBtn" class="strategy-btn active" onclick="setStrategy('rental')">
+                            🏠 Buy & Hold Rental
+                        </button>
+                        <button id="flipBtn" class="strategy-btn" onclick="setStrategy('flip')">
+                            🔨 Fix & Flip
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label>Property Address</label>
                     <input type="text" id="address" placeholder="Start typing an address..." oninput="calculate()">
@@ -366,15 +430,40 @@
                     <input type="hidden" id="zipCode">
                 </div>
 
-                <div class="two-column">
+                <div class="two-column rental-only">
+                    <div class="form-group">
+                        <label>Vacancy Rate (%)</label>
+                        <input type="number" id="vacancyRate" placeholder="8" value="8" step="0.1" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>Property Mgmt Fee (% of rent)</label>
+                        <input type="number" id="mgmtFee" placeholder="0" value="0" step="0.1" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="two-column rental-only">
                     <div class="form-group">
                         <label>Purchase Price ($)</label>
                         <input type="number" id="purchasePrice" placeholder="250000" oninput="calculate()">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group rental-only">
                         <label>Estimated Monthly Rent ($)</label>
                         <input type="number" id="monthlyRent" placeholder="2000" oninput="calculate()">
                     </div>
+                    <div class="form-group flip-only">
+                        <label>After Repair Value (ARV) ($)</label>
+                        <input type="number" id="arv" placeholder="350000" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="form-group flip-only">
+                    <label>Estimated Rehab Costs ($)</label>
+                    <input type="number" id="rehabCosts" placeholder="50000" oninput="calculate()">
+                </div>
+
+                <div class="form-group flip-only">
+                    <label>Holding Time (months)</label>
+                    <input type="number" id="holdingTime" placeholder="6" value="6" oninput="calculate()">
                 </div>
 
                 <div class="two-column">
@@ -417,16 +506,16 @@
                         <label>Monthly HOA Fees ($)</label>
                         <input type="number" id="hoaFees" placeholder="0" value="0" oninput="calculate()">
                     </div>
-                    <div class="form-group">
-                        <label>Vacancy Rate (%)</label>
-                        <input type="number" id="vacancyRate" placeholder="8" value="8" step="0.1" oninput="calculate()">
+                    <div class="form-group rental-only">
+                        <label>Maintenance Reserve (%)</label>
+                        <input type="number" id="maintenanceRate" placeholder="1" value="1" step="0.1" oninput="calculate()">
                     </div>
                 </div>
 
-                <div class="two-column">
+                <div class="two-column rental-only">
                     <div class="form-group">
-                        <label>Maintenance Reserve (%)</label>
-                        <input type="number" id="maintenanceRate" placeholder="1" value="1" step="0.1" oninput="calculate()">
+                        <label>Vacancy Rate (%)</label>
+                        <input type="number" id="vacancyRate" placeholder="8" value="8" step="0.1" oninput="calculate()">
                     </div>
                     <div class="form-group">
                         <label>Property Mgmt Fee (% of rent)</label>
@@ -515,6 +604,7 @@
         let chart = null;
         let savedProperties = JSON.parse(localStorage.getItem('savedProperties')) || [];
         let autocomplete;
+        let currentStrategy = 'rental'; // Default to rental
 
         // State average property tax rates (as percentage of home value)
         const stateTaxRates = {
@@ -613,10 +703,35 @@
             calculate();
         }
 
+        // Strategy toggle
+        function setStrategy(strategy) {
+            currentStrategy = strategy;
+            
+            // Update button states
+            document.getElementById('rentalBtn').classList.toggle('active', strategy === 'rental');
+            document.getElementById('flipBtn').classList.toggle('active', strategy === 'flip');
+            
+            // Show/hide relevant fields
+            const rentalFields = document.querySelectorAll('.rental-only');
+            const flipFields = document.querySelectorAll('.flip-only');
+            
+            rentalFields.forEach(field => {
+                field.style.display = strategy === 'rental' ? 'block' : 'none';
+            });
+            
+            flipFields.forEach(field => {
+                field.style.display = strategy === 'flip' ? 'block' : 'none';
+            });
+            
+            // Recalculate with new strategy
+            calculate();
+        }
+
         // Initialize when page loads
         window.addEventListener('load', function() {
             // Don't call initAutocomplete here - it's called by the Google Maps callback
             updateComparisonTable();
+            setStrategy('rental'); // Set default strategy
         });
 
         // Update address display
@@ -704,6 +819,159 @@
 
         // Main calculation function
         function calculate() {
+            if (currentStrategy === 'rental') {
+                calculateRental();
+            } else {
+                calculateFlip();
+            }
+        }
+
+        function calculateRental() {
+            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const rent = parseFloat(document.getElementById('monthlyRent').value) || 0;
+            const downPayment = parseFloat(document.getElementById('downPaymentDollar').value) || 0;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value) || 30;
+            const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const hoaFees = parseFloat(document.getElementById('hoaFees').value) || 0;
+            const vacancyRate = parseFloat(document.getElementById('vacancyRate').value) || 0;
+            const maintenanceRate = parseFloat(document.getElementById('maintenanceRate').value) || 0;
+            const mgmtFee = parseFloat(document.getElementById('mgmtFee').value) || 0;
+
+            if (price === 0) return;
+
+            // Calculate mortgage payment
+            const loanAmount = price - downPayment;
+            const monthlyRate = (interestRate / 100) / 12;
+            const numPayments = loanTerm * 12;
+            let mortgagePayment = 0;
+            if (loanAmount > 0 && monthlyRate > 0) {
+                mortgagePayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+            }
+
+            // Monthly expenses - FIXED: Calculate property mgmt BEFORE applying vacancy
+            const monthlyTaxes = propertyTaxes / 12;
+            const monthlyInsurance = insurance / 12;
+            const monthlyMaintenance = (price * (maintenanceRate / 100)) / 12;
+            
+            // Effective rental income after vacancy
+            const effectiveRent = rent * (1 - (vacancyRate / 100));
+            
+            // Property management fee is based on collected rent (after vacancy)
+            const propertyMgmt = effectiveRent * (mgmtFee / 100);
+            
+            // Total monthly expenses
+            const totalExpenses = mortgagePayment + monthlyTaxes + monthlyInsurance + hoaFees + monthlyMaintenance + propertyMgmt;
+            
+            // Cash flow is effective rent minus all expenses
+            const cashFlow = effectiveRent - totalExpenses;
+
+            // ROI metrics
+            const annualCashFlow = cashFlow * 12;
+            const cocReturn = downPayment > 0 ? (annualCashFlow / downPayment) * 100 : 0;
+            
+            // NOI doesn't include mortgage, only operating expenses
+            const annualOperatingExpenses = (monthlyTaxes + monthlyInsurance + hoaFees + monthlyMaintenance + propertyMgmt) * 12;
+            const annualNOI = (effectiveRent * 12) - annualOperatingExpenses;
+            const capRate = price > 0 ? (annualNOI / price) * 100 : 0;
+
+            const totalCashNeeded = downPayment + (price * 0.03); // Assuming 3% closing costs
+            
+            // Break-even rent = total expenses divided by effective collection rate
+            const breakEvenRent = totalExpenses / (1 - (vacancyRate / 100) - (mgmtFee / 100));
+
+            // Projections
+            const fiveYearProfit = annualCashFlow * 5;
+            const tenYearProfit = annualCashFlow * 10;
+
+            // Update UI
+            document.getElementById('cashFlow').textContent = formatCurrency(cashFlow);
+            document.getElementById('cashFlow').className = `metric-value ${cashFlow >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('cocReturn').textContent = formatPercent(cocReturn);
+            document.getElementById('capRate').textContent = formatPercent(capRate);
+            document.getElementById('totalCash').textContent = formatCurrency(totalCashNeeded);
+            document.getElementById('breakEven').textContent = formatCurrency(breakEvenRent);
+            document.getElementById('fiveYear').textContent = formatCurrency(fiveYearProfit);
+            document.getElementById('tenYear').textContent = formatCurrency(tenYearProfit);
+
+            // Update tax rate display
+            const effectiveTaxRate = price > 0 ? (propertyTaxes / price) * 100 : 0;
+            document.getElementById('taxRateDisplay').textContent = 
+                price > 0 ? `Effective rate: ${effectiveTaxRate.toFixed(2)}% of property value` : '';
+
+            // Show insurance note if auto-filled
+            const insuranceInput = document.getElementById('insurance');
+            const insuranceNote = document.getElementById('insuranceNote');
+            if (insuranceInput.classList.contains('auto-filled')) {
+                insuranceNote.style.display = 'block';
+            }
+
+            // Update chart - show vacancy as a separate item
+            const vacancyLoss = rent * (vacancyRate / 100);
+            updateChart(mortgagePayment, monthlyTaxes, monthlyInsurance, hoaFees, monthlyMaintenance, vacancyLoss, propertyMgmt);
+        }
+
+        function calculateFlip() {
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const arv = parseFloat(document.getElementById('arv').value) || 0;
+            const rehabCosts = parseFloat(document.getElementById('rehabCosts').value) || 0;
+            const holdingTime = parseFloat(document.getElementById('holdingTime').value) || 6;
+            const downPayment = parseFloat(document.getElementById('downPaymentDollar').value) || 0;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+
+            if (purchasePrice === 0) return;
+
+            // Flip-specific calculations
+            const sellingCosts = arv * 0.08; // 8% selling costs (6% agent, 2% closing)
+            const buyingCosts = purchasePrice * 0.03; // 3% buying costs
+            const loanAmount = purchasePrice - downPayment;
+            
+            // Holding costs
+            const monthlyInterest = (loanAmount * (interestRate / 100)) / 12;
+            const monthlyPropertyTax = propertyTaxes / 12;
+            const monthlyInsurance = insurance / 12;
+            const totalHoldingCosts = (monthlyInterest + monthlyPropertyTax + monthlyInsurance) * holdingTime;
+
+            // Total investment
+            const totalInvestment = downPayment + rehabCosts + buyingCosts + totalHoldingCosts;
+
+            // Net profit
+            const grossProfit = arv - purchasePrice - rehabCosts - sellingCosts - buyingCosts - totalHoldingCosts;
+            const roi = totalInvestment > 0 ? (grossProfit / totalInvestment) * 100 : 0;
+
+            // Annualized ROI
+            const annualizedROI = (grossProfit / totalInvestment) * (12 / holdingTime) * 100;
+
+            // Update UI for flip
+            document.getElementById('cashFlow').textContent = formatCurrency(grossProfit);
+            document.getElementById('cashFlow').className = `metric-value ${grossProfit >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('cocReturn').textContent = formatPercent(roi);
+            document.getElementById('capRate').textContent = formatPercent(annualizedROI);
+            document.getElementById('totalCash').textContent = formatCurrency(totalInvestment);
+            document.getElementById('breakEven').textContent = formatCurrency(purchasePrice + rehabCosts + sellingCosts + buyingCosts + totalHoldingCosts);
+            document.getElementById('fiveYear').textContent = 'N/A (Flip)';
+            document.getElementById('tenYear').textContent = 'N/A (Flip)';
+
+            // Update tax rate display
+            const effectiveTaxRate = purchasePrice > 0 ? (propertyTaxes / purchasePrice) * 100 : 0;
+            document.getElementById('taxRateDisplay').textContent = 
+                purchasePrice > 0 ? `Effective rate: ${effectiveTaxRate.toFixed(2)}% of property value` : '';
+
+            // Show insurance note if auto-filled
+            const insuranceInput = document.getElementById('insurance');
+            const insuranceNote = document.getElementById('insuranceNote');
+            if (insuranceInput.classList.contains('auto-filled')) {
+                insuranceNote.style.display = 'block';
+            }
+
+            // Update chart for flip expenses
+            updateFlipChart(rehabCosts, buyingCosts, sellingCosts, totalHoldingCosts);
+        }
             const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
             const rent = parseFloat(document.getElementById('monthlyRent').value) || 0;
             const downPayment = parseFloat(document.getElementById('downPaymentDollar').value) || 0;
@@ -823,6 +1091,42 @@
                         title: {
                             display: true,
                             text: 'Monthly Expense Breakdown'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateFlipChart(rehab, buying, selling, holding) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Rehab Costs', 'Buying Costs', 'Selling Costs', 'Holding Costs'],
+                    datasets: [{
+                        data: [rehab, buying, selling, holding],
+                        backgroundColor: [
+                            '#3182ce',
+                            '#4a5568',
+                            '#9c1c1c',
+                            '#2c5282'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Flip Cost Breakdown'
                         }
                     }
                 }
